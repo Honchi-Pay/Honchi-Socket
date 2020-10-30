@@ -2,6 +2,9 @@ package com.honchi.socket.service;
 
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
+import com.honchi.socket.domain.chat.Chat;
+import com.honchi.socket.domain.chat.repository.ChatRepository;
+import com.honchi.socket.domain.message.repository.MessageRepository;
 import com.honchi.socket.domain.user.User;
 import com.honchi.socket.domain.user.repository.UserRepository;
 import com.honchi.socket.payload.MessageRequest;
@@ -16,6 +19,8 @@ public class SocketServiceImpl implements SocketService {
     private final SocketIOServer server;
 
     private final UserRepository userRepository;
+    private final ChatRepository chatRepository;
+    private final MessageRepository messageRepository;
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -44,7 +49,33 @@ public class SocketServiceImpl implements SocketService {
     }
 
     @Override
-    public void send(SocketIOClient client, MessageRequest messageRequest) {
+    public void joinRoom(SocketIOClient client, String room) {
         User user = client.get("user");
+
+        if(user == null) {
+            System.out.println("유저 정보가 존재하지 않습니다.");
+            client.disconnect();
+        }
+
+        chatRepository.save(
+                Chat.builder()
+                        .userId(user.getId())
+                        .roomId(room)
+                        .build()
+        );
+
+        client.joinRoom(room);
+        server.getRoomOperations(room).sendEvent("join room", user.getNickName() + "님이 참가하였습니다.");
+    }
+
+    @Override
+    public void send(SocketIOClient client, MessageRequest messageRequest) {
+        if(!client.getAllRooms().contains(messageRequest.getRoom())) {
+            System.out.println("방이 존재하지 않습니다.");
+            client.disconnect();
+        }
+
+        User user = client.get("user");
+        server.getRoomOperations(messageRequest.getRoom()).sendEvent("", "");
     }
 }

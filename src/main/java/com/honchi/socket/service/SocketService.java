@@ -7,5 +7,6 @@ public interface SocketService {
 
     void connect(SocketIOClient client);
     void disConnect(SocketIOClient client);
+    void joinRoom(SocketIOClient client, String room);
     void send(SocketIOClient client, MessageRequest messageRequest);
 }
