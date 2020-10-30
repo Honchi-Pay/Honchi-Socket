@@ -20,6 +20,8 @@ public class SocketController {
     public void socket() {
         server.addConnectListener(socketService::connect);
         server.addDisconnectListener(socketService::disConnect);
+        server.addEventListener("joinRoom", String.class,
+                (client, data, ackSender) -> socketService.joinRoom(client, data));
         server.addEventListener("send", MessageRequest.class,
                 (client, data, ackSender) -> socketService.send(client, data));
     }
