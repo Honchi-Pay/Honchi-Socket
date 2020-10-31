@@ -3,8 +3,8 @@ package com.honchi.socket.service;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.honchi.socket.domain.chat.Chat;
+import com.honchi.socket.domain.chat.enums.Authority;
 import com.honchi.socket.domain.chat.repository.ChatRepository;
-import com.honchi.socket.domain.message.repository.MessageRepository;
 import com.honchi.socket.domain.user.User;
 import com.honchi.socket.domain.user.repository.UserRepository;
 import com.honchi.socket.payload.MessageRequest;
@@ -20,7 +20,6 @@ public class SocketServiceImpl implements SocketService {
 
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
-    private final MessageRepository messageRepository;
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -57,10 +56,17 @@ public class SocketServiceImpl implements SocketService {
             client.disconnect();
         }
 
+        Authority authority = Authority.MEMBER;
+
+        if(!client.getAllRooms().contains(room)) {
+            authority = Authority.LEADER;
+        }
+
         chatRepository.save(
                 Chat.builder()
                         .userId(user.getId())
                         .roomId(room)
+                        .authority(authority)
                         .build()
         );
 
