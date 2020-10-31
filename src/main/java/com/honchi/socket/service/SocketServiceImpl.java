@@ -3,6 +3,7 @@ package com.honchi.socket.service;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.honchi.socket.domain.chat.Chat;
+import com.honchi.socket.domain.chat.enums.Authority;
 import com.honchi.socket.domain.chat.repository.ChatRepository;
 import com.honchi.socket.domain.message.repository.MessageRepository;
 import com.honchi.socket.domain.user.User;
@@ -57,10 +58,17 @@ public class SocketServiceImpl implements SocketService {
             client.disconnect();
         }
 
+        Authority authority = Authority.MEMBER;
+
+        if(!client.getAllRooms().contains(room)) {
+            authority = Authority.LEADER;
+        }
+
         chatRepository.save(
                 Chat.builder()
                         .userId(user.getId())
                         .roomId(room)
+                        .authority(authority)
                         .build()
         );
 
@@ -70,12 +78,12 @@ public class SocketServiceImpl implements SocketService {
 
     @Override
     public void send(SocketIOClient client, MessageRequest messageRequest) {
-        if(!client.getAllRooms().contains(messageRequest.getRoom())) {
+        if(!client.getAllRooms().contains(messageRequest.getRoomId())) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
         }
 
         User user = client.get("user");
-        server.getRoomOperations(messageRequest.getRoom()).sendEvent("", "");
+        server.getRoomOperations(messageRequest.getRoomId()).sendEvent("", "");
     }
 }
