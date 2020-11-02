@@ -5,13 +5,17 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.honchi.socket.domain.chat.Chat;
 import com.honchi.socket.domain.chat.enums.Authority;
 import com.honchi.socket.domain.chat.repository.ChatRepository;
+import com.honchi.socket.domain.message.Message;
 import com.honchi.socket.domain.message.repository.MessageRepository;
 import com.honchi.socket.domain.user.User;
 import com.honchi.socket.domain.user.repository.UserRepository;
 import com.honchi.socket.payload.MessageRequest;
+import com.honchi.socket.payload.MessageResponse;
 import com.honchi.socket.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +32,7 @@ public class SocketServiceImpl implements SocketService {
     @Override
     public void connect(SocketIOClient client) {
         String token = client.getHandshakeData().getSingleUrlParam("token");
-        if(!jwtTokenProvider.validationToken(token)) {
+        if (!jwtTokenProvider.validationToken(token)) {
             System.out.println("토큰이 유효하지 않습니다.");
             client.disconnect();
         }
@@ -53,14 +57,15 @@ public class SocketServiceImpl implements SocketService {
     public void joinRoom(SocketIOClient client, String room) {
         User user = client.get("user");
 
-        if(user == null) {
+        if (user == null) {
             System.out.println("유저 정보가 존재하지 않습니다.");
             client.disconnect();
+            return;
         }
 
         Authority authority = Authority.MEMBER;
 
-        if(!client.getAllRooms().contains(room)) {
+        if (!client.getAllRooms().contains(room)) {
             authority = Authority.LEADER;
         }
 
@@ -68,6 +73,7 @@ public class SocketServiceImpl implements SocketService {
                 Chat.builder()
                         .userId(user.getId())
                         .roomId(room)
+                        .title("default")
                         .authority(authority)
                         .build()
         );
@@ -78,12 +84,38 @@ public class SocketServiceImpl implements SocketService {
 
     @Override
     public void send(SocketIOClient client, MessageRequest messageRequest) {
-        if(!client.getAllRooms().contains(messageRequest.getRoomId())) {
+        if (!client.getAllRooms().contains(messageRequest.getRoomId())) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
         }
 
         User user = client.get("user");
-        server.getRoomOperations(messageRequest.getRoomId()).sendEvent("", "");
+        if (user == null) {
+            System.out.println("유저 정보가 존재하지 않습니다.");
+            client.disconnect();
+            return;
+        }
+
+        Message message = messageRepository.save(
+                Message.builder()
+                        .roomId(messageRequest.getRoomId())
+                        .message(messageRequest.getMessage())
+                        .time(LocalDateTime.now())
+                        .userId(user.getId())
+                        .isDelete(false)
+                        .isShow(false)
+                        .build()
+        );
+
+        server.getRoomOperations(message.getRoomId()).sendEvent("receive",
+                MessageResponse.builder()
+                        .id(message.getId())
+                        .name(user.getNickName())
+                        .message(message.getMessage())
+                        .time(message.getTime())
+                        .isDeleted(message.isDelete())
+                        .userId(user.getId())
+                        .build()
+        );
     }
 }
