@@ -9,6 +9,7 @@ import com.honchi.socket.domain.message.Message;
 import com.honchi.socket.domain.message.repository.MessageRepository;
 import com.honchi.socket.domain.user.User;
 import com.honchi.socket.domain.user.repository.UserRepository;
+import com.honchi.socket.payload.ChangeTitleRequest;
 import com.honchi.socket.payload.MessageRequest;
 import com.honchi.socket.payload.MessageResponse;
 import com.honchi.socket.security.JwtTokenProvider;
@@ -57,44 +58,62 @@ public class SocketServiceImpl implements SocketService {
     public void joinRoom(SocketIOClient client, String room) {
         User user = client.get("user");
 
-        if (user == null) {
-            System.out.println("유저 정보가 존재하지 않습니다.");
-            client.disconnect();
-            return;
-        }
+        checkUser(client, user);
 
         Authority authority = Authority.MEMBER;
+        String title = "default";
 
         if (!client.getAllRooms().contains(room)) {
             authority = Authority.LEADER;
+            title = user.getNickName() + "님의 채팅방";
         }
 
         chatRepository.save(
                 Chat.builder()
                         .userId(user.getId())
                         .roomId(room)
-                        .title("default")
+                        .title(title)
                         .authority(authority)
                         .build()
         );
 
         client.joinRoom(room);
-        server.getRoomOperations(room).sendEvent("join room", user.getNickName() + "님이 참가하였습니다.");
+        server.getRoomOperations(room).sendEvent("join", user.getNickName() + "님이 참가하였습니다.");
+    }
+
+    @Override
+    public void leaveRoom(SocketIOClient client, String room) {
+        checkRoom(client, room);
+
+        User user = client.get("user");
+
+        checkUser(client, user);
+
+        client.leaveRoom(room);
+        server.getRoomOperations(room).sendEvent("leave", user.getNickName() + "님이 퇴장하였습니다.");
+    }
+
+    @Override
+    public void changeTitle(SocketIOClient client, ChangeTitleRequest changeTitleRequest) {
+        checkRoom(client, changeTitleRequest.getRoomId());
+
+        User user = client.get("user");
+
+        checkUser(client, user);
+
+        server.getRoomOperations(changeTitleRequest.getRoomId()).sendEvent("change",
+                user.getNickName() + "님이 채팅방 이름을 " +
+                        changeTitleRequest.getTitle() + "로 지정하였습니다."
+        );
     }
 
     @Override
     public void send(SocketIOClient client, MessageRequest messageRequest) {
-        if (!client.getAllRooms().contains(messageRequest.getRoomId())) {
-            System.out.println("방이 존재하지 않습니다.");
-            client.disconnect();
-        }
+        checkRoom(client, messageRequest.getRoomId());
 
         User user = client.get("user");
-        if (user == null) {
-            System.out.println("유저 정보가 존재하지 않습니다.");
-            client.disconnect();
-            return;
-        }
+
+        checkUser(client, user);
 
         Message message = messageRepository.save(
                 Message.builder()
@@ -117,5 +136,19 @@ public class SocketServiceImpl implements SocketService {
                         .userId(user.getId())
                         .build()
         );
+    }
+
+    private void checkRoom(SocketIOClient client, String roomId) {
+        if (!client.getAllRooms().contains(roomId)) {
+            System.out.println("방이 존재하지 않습니다.");
+            client.disconnect();
+        }
+    }
+
+    private void checkUser(SocketIOClient client, User user) {
+        if (user == null) {
+            System.out.println("유저 정보를 찾을 수 없습니다.");
+            client.disconnect();
+        }
     }
 }
