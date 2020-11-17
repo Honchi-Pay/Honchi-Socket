@@ -6,10 +6,12 @@ import com.honchi.socket.domain.chat.Chat;
 import com.honchi.socket.domain.chat.enums.Authority;
 import com.honchi.socket.domain.chat.repository.ChatRepository;
 import com.honchi.socket.domain.message.Message;
+import com.honchi.socket.domain.message.enums.MessageType;
 import com.honchi.socket.domain.message.repository.MessageRepository;
 import com.honchi.socket.domain.user.User;
 import com.honchi.socket.domain.user.repository.UserRepository;
 import com.honchi.socket.payload.ChangeTitleRequest;
+import com.honchi.socket.payload.JoinRequest;
 import com.honchi.socket.payload.MessageRequest;
 import com.honchi.socket.payload.MessageResponse;
 import com.honchi.socket.security.JwtTokenProvider;
@@ -55,10 +57,9 @@ public class SocketServiceImpl implements SocketService {
     }
 
     @Override
-    public void joinRoom(SocketIOClient client, String room) {
-        User user = client.get("user");
-
-        checkUser(client, user);
+    public void joinRoom(SocketIOClient client, JoinRequest joinRequest) {
+        User user = userRepository.findById(joinRequest.getUserId()).get();
+        String room = joinRequest.getRoomId();
 
         Authority authority = Authority.MEMBER;
         String title = "default";
@@ -72,6 +73,7 @@ public class SocketServiceImpl implements SocketService {
                 Chat.builder()
                         .userId(user.getId())
                         .roomId(room)
+                        .postId(joinRequest.getPostId())
                         .title(title)
                         .authority(authority)
                         .build()
@@ -119,6 +121,7 @@ public class SocketServiceImpl implements SocketService {
                 Message.builder()
                         .roomId(messageRequest.getRoomId())
                         .message(messageRequest.getMessage())
+                        .messageType(MessageType.MESSAGE)
                         .time(LocalDateTime.now())
                         .userId(user.getId())
                         .isDelete(false)
