@@ -6,6 +6,9 @@ spring:
   jpa:
     database: mysql
   datasource:
+    url: ${DB_DRIVER}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
  
 auth:
   jwt:
