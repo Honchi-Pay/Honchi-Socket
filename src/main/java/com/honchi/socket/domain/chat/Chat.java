@@ -26,6 +26,6 @@ public class Chat {
 
     @Enumerated(EnumType.STRING)
     private Authority authority;
-
+  
     private Integer readPoint;
 }
