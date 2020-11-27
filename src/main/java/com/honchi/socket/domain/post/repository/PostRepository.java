@@ -1,7 +1,7 @@
 package com.honchi.socket.domain.post.repository;
 
-import honchi.api.domain.post.domain.Post;
-import honchi.api.domain.post.domain.enums.Completion;
+import com.honchi.socket.domain.post.Post;
+import com.honchi.socket.domain.post.enums.Completion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
