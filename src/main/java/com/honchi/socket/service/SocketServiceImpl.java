@@ -72,7 +72,7 @@ public class SocketServiceImpl implements SocketService {
         chatRepository.save(
                 Chat.builder()
                         .userId(user.getId())
-                        .roomId(room)
+                        .chatId(room)
                         .postId(joinRequest.getPostId())
                         .title(title)
                         .authority(authority)
