@@ -125,7 +125,6 @@ public class SocketServiceImpl implements SocketService {
                         .time(LocalDateTime.now())
                         .userId(user.getId())
                         .isDelete(false)
-                        .isShow(false)
                         .build()
         );
 
@@ -136,7 +135,7 @@ public class SocketServiceImpl implements SocketService {
                         .message(message.getMessage())
                         .time(message.getTime())
                         .isDeleted(message.isDelete())
-                        .userId(user.getId())
+                        .userId(message.getUserId())
                         .build()
         );
     }
