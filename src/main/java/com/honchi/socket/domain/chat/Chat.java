@@ -13,11 +13,10 @@ import javax.persistence.*;
 public class Chat {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String chatId;
 
     @Column(nullable = false)
-    private String roomId;
+    private Integer postId;
 
     @Column(nullable = false)
     private Integer userId;
@@ -27,4 +26,6 @@ public class Chat {
 
     @Enumerated(EnumType.STRING)
     private Authority authority;
+  
+    private Integer readPoint;
 }
