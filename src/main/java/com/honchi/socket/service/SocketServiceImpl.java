@@ -59,14 +59,17 @@ public class SocketServiceImpl implements SocketService {
     @Override
     public void joinRoom(SocketIOClient client, JoinRequest joinRequest) {
         User user = userRepository.findById(joinRequest.getUserId()).get();
-        String room = joinRequest.getRoomId();
+        String room = joinRequest.getChatId();
 
         Authority authority = Authority.MEMBER;
-        String title = "default";
+        String title = "";
 
         if (!client.getAllRooms().contains(room)) {
             authority = Authority.LEADER;
             title = user.getNickName() + "님의 채팅방";
+        } else {
+            Chat chat = chatRepository.findByChatId(joinRequest.getChatId());
+            title = chat.getTitle();
         }
 
         chatRepository.save(

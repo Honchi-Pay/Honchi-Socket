@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public class JoinRequest {
 
-    private String roomId;
+    private String chatId;
 
     private Integer userId;
 
