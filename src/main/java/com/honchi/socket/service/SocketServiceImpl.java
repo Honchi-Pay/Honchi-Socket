@@ -75,7 +75,7 @@ public class SocketServiceImpl implements SocketService {
         chatRepository.save(
                 Chat.builder()
                         .userId(user.getId())
-                        .roomId(room)
+                        .chatId(room)
                         .postId(joinRequest.getPostId())
                         .title(title)
                         .authority(authority)
@@ -122,7 +122,7 @@ public class SocketServiceImpl implements SocketService {
 
         Message message = messageRepository.save(
                 Message.builder()
-                        .roomId(messageRequest.getRoomId())
+                        .chatId(messageRequest.getRoomId())
                         .message(messageRequest.getMessage())
                         .messageType(MessageType.MESSAGE)
                         .time(LocalDateTime.now())
@@ -131,7 +131,7 @@ public class SocketServiceImpl implements SocketService {
                         .build()
         );
 
-        server.getRoomOperations(message.getRoomId()).sendEvent("receive",
+        server.getRoomOperations(message.getChatId()).sendEvent("receive",
                 MessageResponse.builder()
                         .id(message.getId())
                         .name(user.getNickName())
