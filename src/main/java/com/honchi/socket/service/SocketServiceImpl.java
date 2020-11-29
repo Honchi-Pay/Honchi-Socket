@@ -136,6 +136,7 @@ public class SocketServiceImpl implements SocketService {
                         .id(message.getId())
                         .name(user.getNickName())
                         .message(message.getMessage())
+                        .messageType(message.getMessageType())
                         .time(message.getTime())
                         .isDeleted(message.isDelete())
                         .userId(message.getUserId())
