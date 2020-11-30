@@ -10,10 +10,7 @@ import com.honchi.socket.domain.message.enums.MessageType;
 import com.honchi.socket.domain.message.repository.MessageRepository;
 import com.honchi.socket.domain.user.User;
 import com.honchi.socket.domain.user.repository.UserRepository;
-import com.honchi.socket.payload.ChangeTitleRequest;
-import com.honchi.socket.payload.JoinRequest;
-import com.honchi.socket.payload.MessageRequest;
-import com.honchi.socket.payload.MessageResponse;
+import com.honchi.socket.payload.*;
 import com.honchi.socket.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -58,8 +55,10 @@ public class SocketServiceImpl implements SocketService {
 
     @Override
     public void joinRoom(SocketIOClient client, JoinRequest joinRequest) {
-        User user = userRepository.findById(joinRequest.getUserId()).get();
+        User user = client.get("user");
         String room = joinRequest.getChatId();
+
+        checkUser(client, user);
 
         Authority authority = Authority.MEMBER;
         String title = "";
@@ -87,34 +86,34 @@ public class SocketServiceImpl implements SocketService {
     }
 
     @Override
-    public void leaveRoom(SocketIOClient client, String room) {
-        checkRoom(client, room);
+    public void leaveRoom(SocketIOClient client, String chatId) {
+        checkRoom(client, chatId);
 
         User user = client.get("user");
 
         checkUser(client, user);
 
-        client.leaveRoom(room);
-        server.getRoomOperations(room).sendEvent("leave", user.getNickName() + "님이 퇴장하였습니다.");
+        client.leaveRoom(chatId);
+        server.getRoomOperations(chatId).sendEvent("leave", user.getNickName() + "님이 퇴장하였습니다.");
     }
 
     @Override
     public void changeTitle(SocketIOClient client, ChangeTitleRequest changeTitleRequest) {
-        checkRoom(client, changeTitleRequest.getRoomId());
+        checkRoom(client, changeTitleRequest.getChatId());
 
         User user = client.get("user");
 
         checkUser(client, user);
 
-        server.getRoomOperations(changeTitleRequest.getRoomId()).sendEvent("change",
+        server.getRoomOperations(changeTitleRequest.getChatId()).sendEvent("change",
                 user.getNickName() + "님이 채팅방 이름을 " +
                         changeTitleRequest.getTitle() + "로 지정하였습니다."
         );
     }
 
     @Override
-    public void send(SocketIOClient client, MessageRequest messageRequest) {
-        checkRoom(client, messageRequest.getRoomId());
+    public void sendMessage(SocketIOClient client, MessageRequest messageRequest) {
+        checkRoom(client, messageRequest.getChatId());
 
         User user = client.get("user");
 
@@ -122,7 +121,7 @@ public class SocketServiceImpl implements SocketService {
 
         Message message = messageRepository.save(
                 Message.builder()
-                        .chatId(messageRequest.getRoomId())
+                        .chatId(messageRequest.getChatId())
                         .message(messageRequest.getMessage())
                         .messageType(MessageType.MESSAGE)
                         .time(LocalDateTime.now())
@@ -131,17 +130,20 @@ public class SocketServiceImpl implements SocketService {
                         .build()
         );
 
-        server.getRoomOperations(message.getChatId()).sendEvent("receive",
-                MessageResponse.builder()
-                        .id(message.getId())
-                        .name(user.getNickName())
-                        .message(message.getMessage())
-                        .messageType(message.getMessageType())
-                        .time(message.getTime())
-                        .isDeleted(message.isDelete())
-                        .userId(message.getUserId())
-                        .build()
-        );
+        send(user, message);
+    }
+
+    @Override
+    public void sendImage(SocketIOClient client, ImageRequest imageRequest) {
+        checkRoom(client, imageRequest.getChatId());
+
+        User user = client.get("user");
+
+        checkUser(client, user);
+
+        messageRepository.findById(imageRequest.getMessageId()).ifPresent(message -> {
+            send(user, message);
+        });
     }
 
     private void checkRoom(SocketIOClient client, String roomId) {
@@ -156,5 +158,19 @@ public class SocketServiceImpl implements SocketService {
             System.out.println("유저 정보를 찾을 수 없습니다.");
             client.disconnect();
         }
+    }
+
+    private void send(User user, Message message) {
+        server.getRoomOperations(message.getChatId()).sendEvent("receive",
+                MessageResponse.builder()
+                        .id(message.getId())
+                        .name(user.getNickName())
+                        .message(message.getMessage())
+                        .messageType(message.getMessageType())
+                        .time(message.getTime())
+                        .isDeleted(message.isDelete())
+                        .userId(message.getUserId())
+                        .build()
+        );
     }
 }
