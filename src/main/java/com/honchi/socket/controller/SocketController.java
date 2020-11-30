@@ -2,6 +2,7 @@ package com.honchi.socket.controller;
 
 import com.corundumstudio.socketio.SocketIOServer;
 import com.honchi.socket.payload.ChangeTitleRequest;
+import com.honchi.socket.payload.ImageRequest;
 import com.honchi.socket.payload.JoinRequest;
 import com.honchi.socket.payload.MessageRequest;
 import com.honchi.socket.service.SocketService;
@@ -28,7 +29,9 @@ public class SocketController {
                 (client, data, ackSender) -> socketService.leaveRoom(client, data));
         server.addEventListener("changeTitle", ChangeTitleRequest.class,
                 (client, data, ackSender) -> socketService.changeTitle(client, data));
-        server.addEventListener("send", MessageRequest.class,
-                (client, data, ackSender) -> socketService.send(client, data));
+        server.addEventListener("sendMessage", MessageRequest.class,
+                (client, data, ackSender) -> socketService.sendMessage(client, data));
+        server.addEventListener("sendImage", ImageRequest.class,
+                (client, data, ackRequest) -> socketService.sendImage(client, data));
     }
 }
