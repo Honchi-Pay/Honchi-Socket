@@ -7,7 +7,5 @@ public class JoinRequest {
 
     private String chatId;
 
-    private Integer userId;
-
     private Integer postId;
 }

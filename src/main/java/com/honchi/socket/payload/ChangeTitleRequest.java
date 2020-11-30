@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public class ChangeTitleRequest {
 
-    private String roomId;
+    private String chatId;
 
     private String title;
 }
