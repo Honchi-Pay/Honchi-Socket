@@ -93,6 +93,8 @@ public class SocketServiceImpl implements SocketService {
 
         checkUser(client, user);
 
+        chatRepository.deleteByChatIdAndUserId(chatId, user.getId());
+
         client.leaveRoom(chatId);
         server.getRoomOperations(chatId).sendEvent("leave", user.getNickName() + "님이 퇴장하였습니다.");
     }
