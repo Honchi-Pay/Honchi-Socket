@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ChatRepository extends CrudRepository<Chat, String> {
     Chat findByChatId(String chatId);
+    void deleteByChatIdAndUserId(String chatId, Integer userId);
 }
