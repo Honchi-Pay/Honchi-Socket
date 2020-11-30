@@ -23,7 +23,7 @@ jobs:
         run: ./gradlew build
 
       - name: Build Docker Image
-        run: docker build --tag honchi .
+        run: docker build --tag honchi_socket .
 
       - name: Upload to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
