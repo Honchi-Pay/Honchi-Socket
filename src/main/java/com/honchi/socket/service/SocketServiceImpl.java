@@ -81,8 +81,25 @@ public class SocketServiceImpl implements SocketService {
                         .build()
         );
 
+        Message message = messageRepository.save(
+                Message.builder()
+                        .chatId(joinRequest.getChatId())
+                        .message(user.getNickName() + "님이 참가하였습니다.")
+                        .messageType(MessageType.INFO)
+                        .readCount(0)
+                        .isDelete(false)
+                        .userId(user.getId())
+                        .time(LocalDateTime.now())
+                        .build()
+        );
+
         client.joinRoom(room);
-        server.getRoomOperations(room).sendEvent("join", user.getNickName() + "님이 참가하였습니다.");
+        server.getRoomOperations(room).sendEvent("join",
+                MessageResponse.builder()
+                        .message(message.getMessage())
+                        .messageType(message.getMessageType())
+                        .build()
+        );
     }
 
     @Override
@@ -95,8 +112,25 @@ public class SocketServiceImpl implements SocketService {
 
         chatRepository.deleteByChatIdAndUserId(chatId, user.getId());
 
+        Message message = messageRepository.save(
+                Message.builder()
+                        .chatId(chatId)
+                        .message(user.getNickName() + "님이 퇴장하였습니다.")
+                        .messageType(MessageType.INFO)
+                        .userId(user.getId())
+                        .time(LocalDateTime.now())
+                        .isDelete(false)
+                        .readCount(0)
+                        .build()
+        );
+
         client.leaveRoom(chatId);
-        server.getRoomOperations(chatId).sendEvent("leave", user.getNickName() + "님이 퇴장하였습니다.");
+        server.getRoomOperations(chatId).sendEvent("leave",
+                MessageResponse.builder()
+                        .message(message.getMessage())
+                        .messageType(message.getMessageType())
+                        .build()
+        );
     }
 
     @Override
@@ -107,9 +141,24 @@ public class SocketServiceImpl implements SocketService {
 
         checkUser(client, user);
 
+        Message message = messageRepository.save(
+                Message.builder()
+                        .chatId(changeTitleRequest.getChatId())
+                        .message(user.getNickName() + "님이 채팅방 이름을 " +
+                                changeTitleRequest.getTitle() + "로 지정하였습니다.")
+                        .messageType(MessageType.INFO)
+                        .userId(user.getId())
+                        .time(LocalDateTime.now())
+                        .isDelete(false)
+                        .readCount(0)
+                        .build()
+        );
+
         server.getRoomOperations(changeTitleRequest.getChatId()).sendEvent("change",
-                user.getNickName() + "님이 채팅방 이름을 " +
-                        changeTitleRequest.getTitle() + "로 지정하였습니다."
+                MessageResponse.builder()
+                        .message(message.getMessage())
+                        .messageType(message.getMessageType())
+                        .build()
         );
     }
 
