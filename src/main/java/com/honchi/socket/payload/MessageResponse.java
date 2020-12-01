@@ -12,6 +12,8 @@ public class MessageResponse {
 
     private Integer id;
 
+    private Integer userId;
+
     private String name;
 
     private String message;
@@ -20,7 +22,7 @@ public class MessageResponse {
 
     private LocalDateTime time;
 
-    private boolean isDeleted;
+    private boolean isDelete;
 
-    private Integer userId;
+    private boolean isMine;
 }

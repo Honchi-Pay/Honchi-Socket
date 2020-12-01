@@ -95,13 +95,8 @@ public class SocketServiceImpl implements SocketService {
         );
 
         client.joinRoom(room);
-        server.getRoomOperations(room).sendEvent("join",
-                MessageResponse.builder()
-                        .id(message.getId())
-                        .message(user.getNickName() + message.getMessage())
-                        .messageType(message.getMessageType())
-                        .build()
-        );
+
+        sendInfo(user, message);
     }
 
     @Override
@@ -128,7 +123,7 @@ public class SocketServiceImpl implements SocketService {
 
         client.leaveRoom(chatId);
 
-        sendInfo(chatId, user, message);
+        sendInfo(user, message);
     }
 
     @Override
@@ -151,7 +146,7 @@ public class SocketServiceImpl implements SocketService {
                         .build()
         );
 
-        sendInfo(changeTitleRequest.getChatId(), user, message);
+        sendInfo(user, message);
     }
 
     @Override
@@ -210,7 +205,7 @@ public class SocketServiceImpl implements SocketService {
                         .build()
         );
 
-        sendInfo(getPriceRequest.getChatId(), user, message);
+        sendInfo(user, message);
     }
 
     private void checkRoom(SocketIOClient client, String roomId) {
@@ -227,8 +222,8 @@ public class SocketServiceImpl implements SocketService {
         }
     }
 
-    private void sendInfo(String chatId, User user, Message message) {
-        server.getRoomOperations(chatId).sendEvent("info",
+    private void sendInfo(User user, Message message) {
+        server.getRoomOperations(message.getChatId()).sendEvent("info",
                 MessageResponse.builder()
                         .id(message.getId())
                         .message(user.getNickName() + message.getMessage())
@@ -241,12 +236,13 @@ public class SocketServiceImpl implements SocketService {
         server.getRoomOperations(message.getChatId()).sendEvent("receive",
                 MessageResponse.builder()
                         .id(message.getId())
+                        .userId(message.getUserId())
                         .name(user.getNickName())
                         .message(message.getMessage())
                         .messageType(message.getMessageType())
                         .time(message.getTime())
-                        .isDeleted(message.isDelete())
-                        .userId(message.getUserId())
+                        .isDelete(message.isDelete())
+                        .isMine(message.getUserId().equals(user.getId()))
                         .build()
         );
     }
