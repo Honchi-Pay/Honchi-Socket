@@ -1,10 +1,7 @@
 package com.honchi.socket.controller;
 
 import com.corundumstudio.socketio.SocketIOServer;
-import com.honchi.socket.payload.ChangeTitleRequest;
-import com.honchi.socket.payload.ImageRequest;
-import com.honchi.socket.payload.JoinRequest;
-import com.honchi.socket.payload.MessageRequest;
+import com.honchi.socket.payload.*;
 import com.honchi.socket.service.SocketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -33,5 +30,7 @@ public class SocketController {
                 (client, data, ackSender) -> socketService.sendMessage(client, data));
         server.addEventListener("sendImage", ImageRequest.class,
                 (client, data, ackRequest) -> socketService.sendImage(client, data));
+        server.addEventListener("getPrice", GetPriceRequest.class,
+                (client, data, ackRequest) -> socketService.getPrice(client, data));
     }
 }
