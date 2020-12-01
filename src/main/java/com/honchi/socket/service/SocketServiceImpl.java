@@ -84,7 +84,7 @@ public class SocketServiceImpl implements SocketService {
         Message message = messageRepository.save(
                 Message.builder()
                         .chatId(joinRequest.getChatId())
-                        .message(user.getNickName() + "님이 참가하였습니다.")
+                        .message("님이 참가하였습니다.")
                         .messageType(MessageType.INFO)
                         .readCount(0)
                         .isDelete(false)
@@ -96,7 +96,7 @@ public class SocketServiceImpl implements SocketService {
         client.joinRoom(room);
         server.getRoomOperations(room).sendEvent("join",
                 MessageResponse.builder()
-                        .message(message.getMessage())
+                        .message(user.getNickName() + message.getMessage())
                         .messageType(message.getMessageType())
                         .build()
         );
@@ -115,7 +115,7 @@ public class SocketServiceImpl implements SocketService {
         Message message = messageRepository.save(
                 Message.builder()
                         .chatId(chatId)
-                        .message(user.getNickName() + "님이 퇴장하였습니다.")
+                        .message("님이 퇴장하였습니다.")
                         .messageType(MessageType.INFO)
                         .userId(user.getId())
                         .time(LocalDateTime.now())
@@ -127,7 +127,7 @@ public class SocketServiceImpl implements SocketService {
         client.leaveRoom(chatId);
         server.getRoomOperations(chatId).sendEvent("leave",
                 MessageResponse.builder()
-                        .message(message.getMessage())
+                        .message(user.getNickName() + message.getMessage())
                         .messageType(message.getMessageType())
                         .build()
         );
@@ -144,8 +144,7 @@ public class SocketServiceImpl implements SocketService {
         Message message = messageRepository.save(
                 Message.builder()
                         .chatId(changeTitleRequest.getChatId())
-                        .message(user.getNickName() + "님이 채팅방 이름을 " +
-                                changeTitleRequest.getTitle() + "로 지정하였습니다.")
+                        .message("님이 채팅방 이름을 " + changeTitleRequest.getTitle() + "로 지정하였습니다.")
                         .messageType(MessageType.INFO)
                         .userId(user.getId())
                         .time(LocalDateTime.now())
@@ -156,7 +155,7 @@ public class SocketServiceImpl implements SocketService {
 
         server.getRoomOperations(changeTitleRequest.getChatId()).sendEvent("change",
                 MessageResponse.builder()
-                        .message(message.getMessage())
+                        .message(user.getNickName() + message.getMessage())
                         .messageType(message.getMessageType())
                         .build()
         );
