@@ -242,6 +242,7 @@ public class SocketServiceImpl implements SocketService {
                         .messageType(message.getMessageType())
                         .readCount(message.getReadCount())
                         .time(message.getTime())
+                        .isDelete(message.isDelete())
                         .build()
         );
     }
