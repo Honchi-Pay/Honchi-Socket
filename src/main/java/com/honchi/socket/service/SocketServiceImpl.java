@@ -215,12 +215,13 @@ public class SocketServiceImpl implements SocketService {
         server.getRoomOperations(message.getChatId()).sendEvent("receive",
                 MessageResponse.builder()
                         .id(message.getId())
-                        .name(user.getNickName())
+                        .userId(message.getUserId())
+                        .nickName(user.getNickName())
                         .message(message.getMessage())
                         .messageType(message.getMessageType())
+                        .readCount(message.getReadCount())
                         .time(message.getTime())
-                        .isDeleted(message.isDelete())
-                        .userId(message.getUserId())
+                        .isDelete(message.isDelete())
                         .build()
         );
     }

@@ -12,11 +12,15 @@ public class MessageResponse {
 
     private Integer id;
 
-    private String name;
+    private Integer userId;
+
+    private String nickName;
 
     private String message;
 
     private MessageType messageType;
+
+    private Integer readCount;
 
     private LocalDateTime time;
 
