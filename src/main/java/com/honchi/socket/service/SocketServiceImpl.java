@@ -237,12 +237,12 @@ public class SocketServiceImpl implements SocketService {
                 MessageResponse.builder()
                         .id(message.getId())
                         .userId(message.getUserId())
-                        .name(user.getNickName())
+                        .nickName(user.getNickName())
                         .message(message.getMessage())
                         .messageType(message.getMessageType())
+                        .readCount(message.getReadCount())
                         .time(message.getTime())
                         .isDelete(message.isDelete())
-                        .isMine(message.getUserId().equals(user.getId()))
                         .build()
         );
     }
