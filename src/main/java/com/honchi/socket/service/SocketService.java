@@ -7,7 +7,7 @@ public interface SocketService {
 
     void connect(SocketIOClient client);
     void disConnect(SocketIOClient client);
-    void joinRoom(SocketIOClient client, JoinRequest joinRequest);
+    void joinRoom(SocketIOClient client, String chatId);
     void leaveRoom(SocketIOClient client, String chatId);
     void changeTitle(SocketIOClient client, ChangeTitleRequest changeTitleRequest);
     void sendMessage(SocketIOClient client, MessageRequest messageRequest);
