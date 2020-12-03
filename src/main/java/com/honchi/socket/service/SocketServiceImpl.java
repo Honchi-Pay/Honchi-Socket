@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -82,7 +83,9 @@ public class SocketServiceImpl implements SocketService {
                         .build()
         );
 
-        System.out.println(chatId + "방에 " + user.getNickName() + "님이 참여하였습니다.");
+        client.joinRoom(chatId);
+        printLog(chatId, user, " join User : ");
+
         Message message = messageRepository.save(
                 Message.builder()
                         .chatId(chatId)
@@ -94,8 +97,6 @@ public class SocketServiceImpl implements SocketService {
                         .time(LocalDateTime.now())
                         .build()
         );
-
-        client.joinRoom(chatId);
 
         sendInfo(user, message);
     }
@@ -109,7 +110,9 @@ public class SocketServiceImpl implements SocketService {
         checkUser(client, user);
 
         chatRepository.deleteByChatIdAndUserId(chatId, user.getId());
+        client.leaveRoom(chatId);
 
+        printLog(chatId, user, " leave User : ");
         Message message = messageRepository.save(
                 Message.builder()
                         .chatId(chatId)
@@ -122,19 +125,19 @@ public class SocketServiceImpl implements SocketService {
                         .build()
         );
 
-        client.leaveRoom(chatId);
-
         sendInfo(user, message);
     }
 
     @Override
     public void changeTitle(SocketIOClient client, ChangeTitleRequest changeTitleRequest) {
-        checkRoom(client, changeTitleRequest.getChatId());
+        String chatId = changeTitleRequest.getChatId();
+        checkRoom(client, chatId);
 
         User user = client.get("user");
 
         checkUser(client, user);
 
+        printLog(chatId, user, " updateTitle User : ");
         Message message = messageRepository.save(
                 Message.builder()
                         .chatId(changeTitleRequest.getChatId())
@@ -152,11 +155,14 @@ public class SocketServiceImpl implements SocketService {
 
     @Override
     public void sendMessage(SocketIOClient client, MessageRequest messageRequest) {
-        checkRoom(client, messageRequest.getChatId());
+        String chatId = messageRequest.getChatId();
+        checkRoom(client, chatId);
 
         User user = client.get("user");
 
         checkUser(client, user);
+
+        printLog(chatId, user, " send User : ");
 
         Message message = messageRepository.save(
                 Message.builder()
@@ -174,11 +180,14 @@ public class SocketServiceImpl implements SocketService {
 
     @Override
     public void sendImage(SocketIOClient client, ImageRequest imageRequest) {
-        checkRoom(client, imageRequest.getChatId());
+        String chatId = imageRequest.getChatId();
+        checkRoom(client, chatId);
 
         User user = client.get("user");
 
         checkUser(client, user);
+
+        printLog(chatId, user, " sendImage User : ");
 
         messageRepository.findById(imageRequest.getMessageId()).ifPresent(message -> {
             send(user, message);
@@ -246,5 +255,11 @@ public class SocketServiceImpl implements SocketService {
                         .isDelete(message.isDelete())
                         .build()
         );
+    }
+
+    private void printLog(String chatId, User user, String message) {
+        String stringDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+
+        System.out.println("[" + stringDate + "] " + "chatId" + chatId + message + user.getNickName());
     }
 }
