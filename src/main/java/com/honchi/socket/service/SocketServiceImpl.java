@@ -55,28 +55,27 @@ public class SocketServiceImpl implements SocketService {
     }
 
     @Override
-    public void joinRoom(SocketIOClient client, JoinRequest joinRequest) {
+    public void joinRoom(SocketIOClient client, String chatId) {
         User user = client.get("user");
-        String room = joinRequest.getChatId();
 
         checkUser(client, user);
 
         Authority authority = Authority.MEMBER;
         String title = "";
 
-        if (!client.getAllRooms().contains(room)) {
+        if (!client.getAllRooms().contains(chatId)) {
             authority = Authority.LEADER;
             title = user.getNickName() + "님의 채팅방";
         } else {
-            Chat chat = chatRepository.findByChatId(joinRequest.getChatId());
+            Chat chat = chatRepository.findByChatId(chatId);
             title = chat.getTitle();
         }
 
         chatRepository.save(
                 Chat.builder()
                         .userId(user.getId())
-                        .chatId(room)
-                        .postId(joinRequest.getPostId())
+                        .chatId(chatId)
+                        .postId(Integer.parseInt(chatId))
                         .title(title)
                         .authority(authority)
                         .build()
@@ -84,7 +83,7 @@ public class SocketServiceImpl implements SocketService {
 
         Message message = messageRepository.save(
                 Message.builder()
-                        .chatId(joinRequest.getChatId())
+                        .chatId(chatId)
                         .message("님이 참가하였습니다.")
                         .messageType(MessageType.INFO)
                         .readCount(0)
@@ -94,7 +93,7 @@ public class SocketServiceImpl implements SocketService {
                         .build()
         );
 
-        client.joinRoom(room);
+        client.joinRoom(chatId);
 
         sendInfo(user, message);
     }
