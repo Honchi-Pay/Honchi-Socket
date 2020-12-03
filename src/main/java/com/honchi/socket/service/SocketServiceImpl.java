@@ -62,6 +62,10 @@ public class SocketServiceImpl implements SocketService {
 
         checkUser(client, user);
 
+        chatRepository.findByChatIdAndUserId(chatId, user.getId()).ifPresent(chat -> {
+            printLog(chatId, user, "already joined user : ");
+        });
+
         Authority authority = Authority.MEMBER;
         String title = "";
 
@@ -79,6 +83,7 @@ public class SocketServiceImpl implements SocketService {
                         .chatId(chatId)
                         .postId(Integer.parseInt(chatId))
                         .title(title)
+                        .readPoint(messageRepository.findTop1ByChatIdOrderByTimeDesc(chatId).getId())
                         .authority(authority)
                         .build()
         );
