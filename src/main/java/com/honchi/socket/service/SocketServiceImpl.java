@@ -82,6 +82,7 @@ public class SocketServiceImpl implements SocketService {
                         .build()
         );
 
+        System.out.println(chatId + "방에 " + user.getNickName() + "님이 참여하였습니다.");
         Message message = messageRepository.save(
                 Message.builder()
                         .chatId(chatId)
