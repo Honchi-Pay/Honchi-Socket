@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MessageRepository extends CrudRepository<Message, Integer> {
+    Message findTop1ByChatIdOrderByTimeDesc(String chatId);
 }
