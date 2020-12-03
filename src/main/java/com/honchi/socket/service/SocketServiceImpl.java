@@ -40,7 +40,8 @@ public class SocketServiceImpl implements SocketService {
 
         User user;
         try {
-            user = userRepository.findByEmail(jwtTokenProvider.getEmail(token)).get();
+            user = userRepository.findByEmail(jwtTokenProvider.getEmail(token))
+                    .orElseThrow(RuntimeException::new);
             client.set("user", user);
             System.out.println("ConnectedId : " + client.getSessionId() + " UserNickName : " + user.getNickName());
         } catch (Exception e) {

@@ -10,7 +10,7 @@ spring:
     url: ${DB_DRIVER}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
- 
+
 auth:
   jwt:
     secret: ${JWT_SECRET}

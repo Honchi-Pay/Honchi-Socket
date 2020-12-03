@@ -1,10 +1,12 @@
 package com.honchi.socket.security;
 
 import io.jsonwebtoken.Jwts;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
     @Value("${auth.jwt.secret}")
@@ -12,9 +14,8 @@ public class JwtTokenProvider {
 
     public boolean validationToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secretKey)
-                    .parseClaimsJws(token).getBody().getSubject();
-            return true;
+            return Jwts.parser().setSigningKey(secretKey)
+                    .parseClaimsJws(token).getBody().get("type").equals("access_token");
         } catch (Exception e) {
             return false;
         }
