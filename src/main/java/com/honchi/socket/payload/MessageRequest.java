@@ -1,16 +1,15 @@
 package com.honchi.socket.payload;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class MessageRequest {
 
     private String chatId;
 
     private String message;
-
-    public MessageRequest(String chatId, String message) {
-        this.chatId = chatId;
-        this.message = message;
-    }
 }
