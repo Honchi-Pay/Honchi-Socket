@@ -64,6 +64,7 @@ public class SocketServiceImpl implements SocketService {
 
         chatRepository.findByChatIdAndUserId(chatId, user.getId()).ifPresent(chat -> {
             printLog(chatId, user, "already joined user : ");
+            client.disconnect();
         });
 
         Authority authority = Authority.MEMBER;
@@ -77,17 +78,6 @@ public class SocketServiceImpl implements SocketService {
             title = chat.getTitle();
         }
 
-        chatRepository.save(
-                Chat.builder()
-                        .userId(user.getId())
-                        .chatId(chatId)
-                        .postId(Integer.parseInt(chatId))
-                        .title(title)
-                        .readPoint(messageRepository.findTop1ByChatIdOrderByTimeDesc(chatId).getId())
-                        .authority(authority)
-                        .build()
-        );
-
         client.joinRoom(chatId);
         printLog(chatId, user, " join User : ");
 
@@ -100,6 +90,17 @@ public class SocketServiceImpl implements SocketService {
                         .isDelete(false)
                         .userId(user.getId())
                         .time(LocalDateTime.now())
+                        .build()
+        );
+
+        chatRepository.save(
+                Chat.builder()
+                        .userId(user.getId())
+                        .chatId(chatId)
+                        .postId(Integer.parseInt(chatId))
+                        .title(title)
+                        .readPoint(message.getId())
+                        .authority(authority)
                         .build()
         );
 
