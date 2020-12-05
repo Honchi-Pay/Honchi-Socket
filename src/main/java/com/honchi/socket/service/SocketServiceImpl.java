@@ -62,6 +62,7 @@ public class SocketServiceImpl implements SocketService {
 
         if(user == null) {
             System.out.println("유저 정보가 없습니다.");
+            client.disconnect();
             return;
         }
 
@@ -114,6 +115,7 @@ public class SocketServiceImpl implements SocketService {
     public void leaveRoom(SocketIOClient client, String chatId) {
         if(!client.getAllRooms().contains(chatId)) {
             System.out.println("방이 존재하지 않습니다.");
+            client.disconnect();
             return;
         }
 
@@ -121,6 +123,7 @@ public class SocketServiceImpl implements SocketService {
 
         if(user == null) {
             System.out.println("유저 정보가 없습니다.");
+            client.disconnect();
             return;
         }
 
@@ -148,6 +151,7 @@ public class SocketServiceImpl implements SocketService {
         String chatId = changeTitleRequest.getChatId();
         if(!client.getAllRooms().contains(chatId)) {
             System.out.println("방이 존재하지 않습니다.");
+            client.disconnect();
             return;
         }
 
@@ -155,6 +159,7 @@ public class SocketServiceImpl implements SocketService {
 
         if(user == null) {
             System.out.println("유저 정보가 없습니다.");
+            client.disconnect();
             return;
         }
 
@@ -179,6 +184,7 @@ public class SocketServiceImpl implements SocketService {
         String chatId = messageRequest.getChatId();
         if(!client.getAllRooms().contains(chatId)) {
             System.out.println("방이 존재하지 않습니다.");
+            client.disconnect();
             return;
         }
 
@@ -186,6 +192,7 @@ public class SocketServiceImpl implements SocketService {
 
         if(user == null) {
             System.out.println("유저 정보가 없습니다.");
+            client.disconnect();
             return;
         }
 
@@ -211,6 +218,7 @@ public class SocketServiceImpl implements SocketService {
         String chatId = imageRequest.getChatId();
         if(!client.getAllRooms().contains(chatId)) {
             System.out.println("방이 존재하지 않습니다.");
+            client.disconnect();
             return;
         }
 
@@ -218,6 +226,7 @@ public class SocketServiceImpl implements SocketService {
 
         if(user == null) {
             System.out.println("유저 정보가 없습니다.");
+            client.disconnect();
             return;
         }
 
@@ -233,6 +242,7 @@ public class SocketServiceImpl implements SocketService {
     public void getPrice(SocketIOClient client, GetPriceRequest getPriceRequest) {
         if(!client.getAllRooms().contains(getPriceRequest.getChatId())) {
             System.out.println("방이 존재하지 않습니다.");
+            client.disconnect();
             return;
         }
 
@@ -240,6 +250,7 @@ public class SocketServiceImpl implements SocketService {
 
         if(user == null) {
             System.out.println("유저 정보가 없습니다.");
+            client.disconnect();
             return;
         }
 
