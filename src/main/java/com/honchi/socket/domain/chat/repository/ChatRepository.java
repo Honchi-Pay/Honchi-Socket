@@ -9,6 +9,7 @@ import java.util.Optional;
 @Repository
 public interface ChatRepository extends CrudRepository<Chat, String> {
     Chat findByChatId(String chatId);
+    Integer countByChatId(String chatId);
     Optional<Chat> findByChatIdAndUserId(String chatId, Integer userId);
     void deleteByChatIdAndUserId(String chatId, Integer userId);
 }

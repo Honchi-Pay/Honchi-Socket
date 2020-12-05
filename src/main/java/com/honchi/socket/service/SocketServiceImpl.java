@@ -177,6 +177,7 @@ public class SocketServiceImpl implements SocketService {
                         .messageType(MessageType.MESSAGE)
                         .time(LocalDateTime.now())
                         .userId(user.getId())
+                        .readCount(chatRepository.countByChatId(chatId))
                         .isDelete(false)
                         .build()
         );
