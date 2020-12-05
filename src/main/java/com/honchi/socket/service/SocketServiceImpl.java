@@ -167,7 +167,7 @@ public class SocketServiceImpl implements SocketService {
         Message message = messageRepository.save(
                 Message.builder()
                         .chatId(changeTitleRequest.getChatId())
-                        .message("님이 채팅방 이름을 " + changeTitleRequest.getTitle() + "로 지정하였습니다.")
+                        .message(user.getNickName() + "님이 채팅방 이름을 " + changeTitleRequest.getTitle() + "로 지정하였습니다.")
                         .messageType(MessageType.INFO)
                         .userId(user.getId())
                         .time(LocalDateTime.now())
@@ -182,6 +182,7 @@ public class SocketServiceImpl implements SocketService {
     @Override
     public void sendMessage(SocketIOClient client, MessageRequest messageRequest) {
         String chatId = messageRequest.getChatId();
+        System.out.println(chatId);
         if(!client.getAllRooms().contains(chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
