@@ -60,7 +60,10 @@ public class SocketServiceImpl implements SocketService {
     public void joinRoom(SocketIOClient client, String chatId) {
         User user = client.get("user");
 
-        checkUser(client, user);
+        if(user == null) {
+            System.out.println("유저 정보가 없습니다.");
+            return;
+        }
 
         chatRepository.findByChatIdAndUserId(chatId, user.getId()).ifPresent(chat -> {
             printLog(chatId, user, "already joined user : ");
@@ -109,11 +112,17 @@ public class SocketServiceImpl implements SocketService {
 
     @Override
     public void leaveRoom(SocketIOClient client, String chatId) {
-        checkRoom(client, chatId);
+        if(!client.getAllRooms().contains(chatId)) {
+            System.out.println("방이 존재하지 않습니다.");
+            return;
+        }
 
         User user = client.get("user");
 
-        checkUser(client, user);
+        if(user == null) {
+            System.out.println("유저 정보가 없습니다.");
+            return;
+        }
 
         chatRepository.deleteByChatIdAndUserId(chatId, user.getId());
         client.leaveRoom(chatId);
@@ -137,11 +146,17 @@ public class SocketServiceImpl implements SocketService {
     @Override
     public void changeTitle(SocketIOClient client, ChangeTitleRequest changeTitleRequest) {
         String chatId = changeTitleRequest.getChatId();
-        checkRoom(client, chatId);
+        if(!client.getAllRooms().contains(chatId)) {
+            System.out.println("방이 존재하지 않습니다.");
+            return;
+        }
 
         User user = client.get("user");
 
-        checkUser(client, user);
+        if(user == null) {
+            System.out.println("유저 정보가 없습니다.");
+            return;
+        }
 
         printLog(chatId, user, " updateTitle User : ");
         Message message = messageRepository.save(
@@ -162,11 +177,17 @@ public class SocketServiceImpl implements SocketService {
     @Override
     public void sendMessage(SocketIOClient client, MessageRequest messageRequest) {
         String chatId = messageRequest.getChatId();
-        checkRoom(client, chatId);
+        if(!client.getAllRooms().contains(chatId)) {
+            System.out.println("방이 존재하지 않습니다.");
+            return;
+        }
 
         User user = client.get("user");
 
-        checkUser(client, user);
+        if(user == null) {
+            System.out.println("유저 정보가 없습니다.");
+            return;
+        }
 
         printLog(chatId, user, " send User : ");
 
@@ -188,11 +209,17 @@ public class SocketServiceImpl implements SocketService {
     @Override
     public void sendImage(SocketIOClient client, ImageRequest imageRequest) {
         String chatId = imageRequest.getChatId();
-        checkRoom(client, chatId);
+        if(!client.getAllRooms().contains(chatId)) {
+            System.out.println("방이 존재하지 않습니다.");
+            return;
+        }
 
         User user = client.get("user");
 
-        checkUser(client, user);
+        if(user == null) {
+            System.out.println("유저 정보가 없습니다.");
+            return;
+        }
 
         printLog(chatId, user, " sendImage User : ");
 
@@ -204,11 +231,17 @@ public class SocketServiceImpl implements SocketService {
     @Async
     @Override
     public void getPrice(SocketIOClient client, GetPriceRequest getPriceRequest) {
-        checkRoom(client, getPriceRequest.getChatId());
+        if(!client.getAllRooms().contains(getPriceRequest.getChatId())) {
+            System.out.println("방이 존재하지 않습니다.");
+            return;
+        }
 
         User user = client.get("user");
 
-        checkUser(client, user);
+        if(user == null) {
+            System.out.println("유저 정보가 없습니다.");
+            return;
+        }
 
         Message message = messageRepository.save(
                 Message.builder()
@@ -223,20 +256,6 @@ public class SocketServiceImpl implements SocketService {
         );
 
         sendInfo(user, message);
-    }
-
-    private void checkRoom(SocketIOClient client, String roomId) {
-        if (!client.getAllRooms().contains(roomId)) {
-            System.out.println("방이 존재하지 않습니다.");
-            client.disconnect();
-        }
-    }
-
-    private void checkUser(SocketIOClient client, User user) {
-        if (user == null) {
-            System.out.println("유저 정보를 찾을 수 없습니다.");
-            client.disconnect();
-        }
     }
 
     private void sendInfo(User user, Message message) {
