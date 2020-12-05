@@ -181,8 +181,7 @@ public class SocketServiceImpl implements SocketService {
 
     @Override
     public void sendMessage(SocketIOClient client, MessageRequest messageRequest) {
-        String chatId = messageRequest.getChatId();
-        System.out.println(chatId);
+        String chatId = String.valueOf(messageRequest.getChatId());
         if(!client.getAllRooms().contains(chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
