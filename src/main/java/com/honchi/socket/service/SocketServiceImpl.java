@@ -157,7 +157,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        if(client.getAllRooms().contains(chatId)) {
+        if(!client.getAllRooms().contains(chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
@@ -190,7 +190,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        if(client.getAllRooms().contains(chatId)) {
+        if(!client.getAllRooms().contains(chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
@@ -224,7 +224,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        if(client.getAllRooms().contains(chatId)) {
+        if(!client.getAllRooms().contains(chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
@@ -249,7 +249,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        if(client.getAllRooms().contains(chatId)) {
+        if(!client.getAllRooms().contains(chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
