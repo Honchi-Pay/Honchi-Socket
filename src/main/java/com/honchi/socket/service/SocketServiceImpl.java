@@ -114,7 +114,8 @@ public class SocketServiceImpl implements SocketService {
 
     @Override
     public void leaveRoom(SocketIOClient client, String chatId) {
-        if(!client.getAllRooms().contains(chatId)) {
+        Chat chat = client.get(chatId);
+        if(chat == null) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
@@ -150,7 +151,8 @@ public class SocketServiceImpl implements SocketService {
     @Override
     public void changeTitle(SocketIOClient client, ChangeTitleRequest changeTitleRequest) {
         String chatId = changeTitleRequest.getChatId();
-        if(!client.getAllRooms().contains(chatId)) {
+        Chat chat = client.get(chatId);
+        if(chat == null) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
@@ -183,8 +185,8 @@ public class SocketServiceImpl implements SocketService {
     @Override
     public void sendMessage(SocketIOClient client, MessageRequest messageRequest) {
         String chatId = messageRequest.getChatId();
-        System.out.println(client.getAllRooms());
-        if(!client.getAllRooms().contains(chatId)) {
+        Chat chat = client.get(chatId);
+        if(chat == null) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
@@ -218,7 +220,8 @@ public class SocketServiceImpl implements SocketService {
     @Override
     public void sendImage(SocketIOClient client, ImageRequest imageRequest) {
         String chatId = imageRequest.getChatId();
-        if(!client.getAllRooms().contains(chatId)) {
+        Chat chat = client.get(chatId);
+        if(chat == null) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
@@ -242,7 +245,8 @@ public class SocketServiceImpl implements SocketService {
     @Async
     @Override
     public void getPrice(SocketIOClient client, GetPriceRequest getPriceRequest) {
-        if(!client.getAllRooms().contains(getPriceRequest.getChatId())) {
+        Chat chat = client.get(getPriceRequest.getChatId());
+        if(chat == null) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
