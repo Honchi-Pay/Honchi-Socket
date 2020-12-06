@@ -20,9 +20,6 @@ public class Chat {
     private String chatId;
 
     @Column(nullable = false)
-    private Integer postId;
-
-    @Column(nullable = false)
     private Integer userId;
 
     @Column(nullable = false)
