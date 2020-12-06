@@ -83,7 +83,7 @@ public class SocketServiceImpl implements SocketService {
             title = chat.getTitle();
         }
 
-        client.joinRoom("" + chatId);
+        client.joinRoom(chatId);
 
         Message message = messageRepository.save(
                 Message.builder()
@@ -97,7 +97,7 @@ public class SocketServiceImpl implements SocketService {
                         .build()
         );
 
-        Chat chat = chatRepository.save(
+        chatRepository.save(
                 Chat.builder()
                         .userId(user.getId())
                         .chatId(chatId)
@@ -106,7 +106,6 @@ public class SocketServiceImpl implements SocketService {
                         .authority(authority)
                         .build()
         );
-        client.set("room", chat);
         printLog(chatId, user, " join User : ");
 
         sendInfo(user, message);
@@ -128,6 +127,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
+        client.leaveRoom(chatId);
         chatRepository.deleteByChatIdAndUserId(chatId, user.getId());
 
         printLog(chatId, user, " leave User : ");
@@ -157,7 +157,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        if(client.getAllRooms().contains("" + chatId)) {
+        if(client.getAllRooms().contains(chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
@@ -190,7 +190,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        if(client.getAllRooms().contains("" + chatId)) {
+        if(client.getAllRooms().contains(chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
@@ -224,7 +224,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        if(client.getAllRooms().contains("" + chatId)) {
+        if(client.getAllRooms().contains(chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
@@ -249,7 +249,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        if(client.getAllRooms().contains("" + chatId)) {
+        if(client.getAllRooms().contains(chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
