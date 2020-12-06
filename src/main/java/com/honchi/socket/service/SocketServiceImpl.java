@@ -82,7 +82,8 @@ public class SocketServiceImpl implements SocketService {
             title = chat.getTitle();
         }
 
-        client.joinRoom(chatId);
+        String room = chatId + ":" + user.getId();
+        client.joinRoom(room);
         printLog(chatId, user, " join User : ");
 
         Message message = messageRepository.save(
@@ -106,24 +107,25 @@ public class SocketServiceImpl implements SocketService {
                         .authority(authority)
                         .build()
         );
-        client.set(chatId, chat);
+        client.set(room, chat);
 
         sendInfo(user, message);
     }
 
     @Override
     public void leaveRoom(SocketIOClient client, String chatId) {
-        Chat chat = client.get(chatId);
-        if(chat == null) {
-            System.out.println("방이 존재하지 않습니다.");
-            client.disconnect();
-            return;
-        }
-
         User user = client.get("user");
 
         if(user == null) {
             System.out.println("유저 정보가 없습니다.");
+            client.disconnect();
+            return;
+        }
+
+        String room = chatId + ":" + user.getId();
+        Chat chat = client.get(room);
+        if(chat == null) {
+            System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
         }
@@ -150,17 +152,19 @@ public class SocketServiceImpl implements SocketService {
     @Override
     public void changeTitle(SocketIOClient client, ChangeTitleRequest changeTitleRequest) {
         String chatId = changeTitleRequest.getChatId();
-        Chat chat = client.get(chatId);
-        if(chat == null) {
-            System.out.println("방이 존재하지 않습니다.");
-            client.disconnect();
-            return;
-        }
-
         User user = client.get("user");
 
         if(user == null) {
             System.out.println("유저 정보가 없습니다.");
+            client.disconnect();
+            return;
+        }
+
+        String room = chatId + ":" + user.getId();
+        Chat chat = client.get(room);
+
+        if(chat == null) {
+            System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
         }
@@ -183,14 +187,8 @@ public class SocketServiceImpl implements SocketService {
 
     @Override
     public void sendMessage(SocketIOClient client, MessageRequest messageRequest) {
+        System.out.println(client.getAllRooms());
         String chatId = messageRequest.getChatId();
-        Chat chat = client.get(chatId);
-        if(chat == null) {
-            System.out.println("방이 존재하지 않습니다.");
-            client.disconnect();
-            return;
-        }
-
         User user = client.get("user");
 
         if(user == null) {
@@ -198,6 +196,15 @@ public class SocketServiceImpl implements SocketService {
             client.disconnect();
             return;
         }
+
+        String room = chatId + ":" + user.getId();
+        Chat chat = client.get(room);
+        if(chat == null) {
+            System.out.println("방이 존재하지 않습니다.");
+            client.disconnect();
+            return;
+        }
+
 
         printLog(chatId, user, " send User : ");
 
@@ -219,17 +226,18 @@ public class SocketServiceImpl implements SocketService {
     @Override
     public void sendImage(SocketIOClient client, ImageRequest imageRequest) {
         String chatId = imageRequest.getChatId();
-        Chat chat = client.get(chatId);
-        if(chat == null) {
-            System.out.println("방이 존재하지 않습니다.");
-            client.disconnect();
-            return;
-        }
-
         User user = client.get("user");
 
         if(user == null) {
             System.out.println("유저 정보가 없습니다.");
+            client.disconnect();
+            return;
+        }
+
+        String room = chatId + ":" + user.getId();
+        Chat chat = client.get(room);
+        if(chat == null) {
+            System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
         }
