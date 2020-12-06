@@ -104,8 +104,7 @@ public class SocketServiceImpl implements SocketService {
                         .authority(authority)
                         .build()
         );
-        String room = chatId + ":" + user.getId();
-        client.set(room, chat);
+        client.set("room", chat);
         printLog(chatId, user, " join User : ");
 
         sendInfo(user, message);
@@ -121,8 +120,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        String room = chatId + ":" + user.getId();
-        Chat chat = client.get(room);
+        Chat chat = client.get("room");
         if(chat == null) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
@@ -158,8 +156,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        String room = chatId + ":" + user.getId();
-        Chat chat = client.get(room);
+        Chat chat = client.get("room");
 
         if(chat == null) {
             System.out.println("방이 존재하지 않습니다.");
@@ -194,8 +191,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        String room = chatId + ":" + user.getId();
-        Chat chat = client.get(room);
+        Chat chat = client.get("room");
         if(chat == null) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
@@ -231,8 +227,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        String room = chatId + ":" + user.getId();
-        Chat chat = client.get(room);
+        Chat chat = client.get("room");
         if(chat == null) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
@@ -249,17 +244,18 @@ public class SocketServiceImpl implements SocketService {
     @Async
     @Override
     public void getPrice(SocketIOClient client, GetPriceRequest getPriceRequest) {
-        Chat chat = client.get(getPriceRequest.getChatId());
-        if(chat == null) {
-            System.out.println("방이 존재하지 않습니다.");
-            client.disconnect();
-            return;
-        }
-
         User user = client.get("user");
 
         if(user == null) {
             System.out.println("유저 정보가 없습니다.");
+            client.disconnect();
+            return;
+        }
+
+        Chat chat = client.get("room");
+        
+        if(chat == null) {
+            System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
         }
