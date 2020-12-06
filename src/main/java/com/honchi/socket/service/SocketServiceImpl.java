@@ -83,6 +83,8 @@ public class SocketServiceImpl implements SocketService {
             title = chat.getTitle();
         }
 
+        client.joinRoom("" + chatId);
+
         Message message = messageRepository.save(
                 Message.builder()
                         .chatId(chatId)
@@ -120,8 +122,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        Chat chat = client.get("room");
-        if(chat == null) {
+        if(client.getAllRooms().contains("" + chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
@@ -156,9 +157,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        Chat chat = client.get("room");
-
-        if(chat == null) {
+        if(client.getAllRooms().contains("" + chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
@@ -191,13 +190,11 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        Chat chat = client.get("room");
-        if(chat == null) {
+        if(client.getAllRooms().contains("" + chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
         }
-
 
         printLog(chatId, user, " send User : ");
 
@@ -227,8 +224,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        Chat chat = client.get("room");
-        if(chat == null) {
+        if(client.getAllRooms().contains("" + chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
@@ -244,6 +240,7 @@ public class SocketServiceImpl implements SocketService {
     @Async
     @Override
     public void getPrice(SocketIOClient client, GetPriceRequest getPriceRequest) {
+        String chatId = getPriceRequest.getChatId();
         User user = client.get("user");
 
         if(user == null) {
@@ -252,9 +249,7 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        Chat chat = client.get("room");
-        
-        if(chat == null) {
+        if(client.getAllRooms().contains("" + chatId)) {
             System.out.println("방이 존재하지 않습니다.");
             client.disconnect();
             return;
