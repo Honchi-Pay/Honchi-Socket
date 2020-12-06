@@ -83,6 +83,7 @@ public class SocketServiceImpl implements SocketService {
         }
 
         client.joinRoom(chatId);
+        client.set(chatId, chatId);
         printLog(chatId, user, " join User : ");
 
         Message message = messageRepository.save(
@@ -298,6 +299,6 @@ public class SocketServiceImpl implements SocketService {
     private void printLog(String chatId, User user, String message) {
         String stringDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
 
-        System.out.println("[" + stringDate + "] " + "chatId" + chatId + message + user.getNickName());
+        System.out.println("[" + stringDate + "] " + "chatId:" + chatId + message + user.getNickName());
     }
 }
