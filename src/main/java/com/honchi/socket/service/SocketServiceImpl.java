@@ -77,8 +77,8 @@ public class SocketServiceImpl implements SocketService {
         Authority authority = Authority.MEMBER;
         String title = "";
 
-        if (oChat.isPresent()) {
-            Chat chat = chatRepository.findByChatId(chatId);
+        Chat chat = chatRepository.findByChatId(chatId);
+        if(chat != null) {
             title = chat.getTitle();
         } else {
             authority = Authority.LEADER;
