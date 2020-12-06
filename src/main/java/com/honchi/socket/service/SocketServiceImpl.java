@@ -101,7 +101,6 @@ public class SocketServiceImpl implements SocketService {
                 Chat.builder()
                         .userId(user.getId())
                         .chatId(chatId)
-                        .postId(Integer.parseInt(chatId))
                         .title(title)
                         .readPoint(message.getId())
                         .authority(authority)
