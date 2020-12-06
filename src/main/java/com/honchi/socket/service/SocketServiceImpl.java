@@ -83,7 +83,6 @@ public class SocketServiceImpl implements SocketService {
         }
 
         client.joinRoom(chatId);
-        client.set(chatId, chatId);
         printLog(chatId, user, " join User : ");
 
         Message message = messageRepository.save(
@@ -98,7 +97,7 @@ public class SocketServiceImpl implements SocketService {
                         .build()
         );
 
-        chatRepository.save(
+        Chat chat = chatRepository.save(
                 Chat.builder()
                         .userId(user.getId())
                         .chatId(chatId)
@@ -108,6 +107,7 @@ public class SocketServiceImpl implements SocketService {
                         .authority(authority)
                         .build()
         );
+        client.set(chatId, chat);
 
         sendInfo(user, message);
     }
