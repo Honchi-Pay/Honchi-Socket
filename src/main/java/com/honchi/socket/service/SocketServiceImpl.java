@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -66,7 +67,8 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        if(chatRepository.findByChatIdAndUserId(chatId, user.getId()).isPresent()) {
+        Optional<Chat> oChat = chatRepository.findByChatIdAndUserId(chatId, user.getId());
+        if(oChat.isPresent()) {
             printLog(chatId, user, "already joined user : ");
             client.disconnect();
             return;
@@ -75,12 +77,12 @@ public class SocketServiceImpl implements SocketService {
         Authority authority = Authority.MEMBER;
         String title = "";
 
-        if (!client.getAllRooms().contains(chatId)) {
-            authority = Authority.LEADER;
-            title = user.getNickName() + "님의 채팅방";
-        } else {
+        if (oChat.isPresent()) {
             Chat chat = chatRepository.findByChatId(chatId);
             title = chat.getTitle();
+        } else {
+            authority = Authority.LEADER;
+            title = user.getNickName() + "님의 채팅방";
         }
 
         client.joinRoom(chatId);
