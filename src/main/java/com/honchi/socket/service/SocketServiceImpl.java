@@ -66,10 +66,11 @@ public class SocketServiceImpl implements SocketService {
             return;
         }
 
-        chatRepository.findByChatIdAndUserId(chatId, user.getId()).ifPresent(chat -> {
+        if(chatRepository.findByChatIdAndUserId(chatId, user.getId()).isPresent()) {
             printLog(chatId, user, "already joined user : ");
             client.disconnect();
-        });
+            return;
+        }
 
         Authority authority = Authority.MEMBER;
         String title = "";
@@ -81,10 +82,6 @@ public class SocketServiceImpl implements SocketService {
             Chat chat = chatRepository.findByChatId(chatId);
             title = chat.getTitle();
         }
-
-        String room = chatId + ":" + user.getId();
-        client.joinRoom(room);
-        printLog(chatId, user, " join User : ");
 
         Message message = messageRepository.save(
                 Message.builder()
@@ -107,7 +104,9 @@ public class SocketServiceImpl implements SocketService {
                         .authority(authority)
                         .build()
         );
+        String room = chatId + ":" + user.getId();
         client.set(room, chat);
+        printLog(chatId, user, " join User : ");
 
         sendInfo(user, message);
     }
@@ -131,7 +130,6 @@ public class SocketServiceImpl implements SocketService {
         }
 
         chatRepository.deleteByChatIdAndUserId(chatId, user.getId());
-        client.leaveRoom(chatId);
 
         printLog(chatId, user, " leave User : ");
         Message message = messageRepository.save(
@@ -187,7 +185,6 @@ public class SocketServiceImpl implements SocketService {
 
     @Override
     public void sendMessage(SocketIOClient client, MessageRequest messageRequest) {
-        System.out.println(client.getAllRooms());
         String chatId = messageRequest.getChatId();
         User user = client.get("user");
 
