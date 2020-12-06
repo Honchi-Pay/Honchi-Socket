@@ -32,11 +32,6 @@ public class SocketConfig {
         return server;
     }
 
-    @Bean
-    public SpringAnnotationScanner springAnnotationScanner(SocketIOServer socketServer) {
-        return new SpringAnnotationScanner(socketServer);
-    }
-
     @PreDestroy
     public void stop() {
         server.stop();
